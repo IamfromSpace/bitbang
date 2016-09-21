@@ -4,7 +4,53 @@
 
 BitBang is an esoteric programming language inspired by BrainFuck.  It however has two fewer character/instruction and is even harder to write, yay!
 
-All symbols operate almost identically, except that `+`, `-`, and `>` are replaced with `!`. Instead of operating on one byte of memory at a time, BitBang operates an a single bit.  `!` inverts the value at current memory address, and advances the pointer address by one.
+All symbols operate almost identically, except that `+`, `-`, and `>` are replaced with `!`. Instead of operating on one byte of memory at a time, BitBang operates an a single bit.  `!` inverts the value at pointer's address, and advances the pointer address by one.
+
+## Syntax
+
+BitBang instructions affect the memory pointer and the value at the pointer.  In the techinal sense, an infinite amount of memory is required. Each address must have a value of 0 or 1.  When the program starts, all memory should be 0 and the pointer should be at the 0 address.  The following shows the program memory, and the pointer at start up:
+
+```
+000000000000000...
+^
+pointer location
+```
+
+The `!` instruction inverts the current bit and advances the pointer 1. As an Example:
+
+```
+// result of !
+100000000000000...
+ ^
+```
+
+The `<` instruction regresses the pointer 1. As an example:
+
+```
+// result of !<
+100000000000000...
+^
+```
+
+The `[]` defines a loop and can contain any number of instructions.  Each `[` must have a matching `]` and vice versa.  When an `[` is encountered, if the value at the pointer is 1, the program will proceed to the next instruction.  If 0, it will jump to the instruction after the matching `]`.  When a `]` is encountered, the program will always jump to the matching `[`.
+
+In the following example, because the value is 1 when the `[` is encountered, the contained instructions are excuted, in this case, flipping the 1 to 0 and advancing the pointer.  The loop then exits, because the value at the pointer is 0.
+
+```
+// result of !<[!]
+000000000000000...
+ ^
+```
+
+In this example, the second loop never executes, because the value of the pointer address is 0, so no additional bits are inverted.
+
+```
+// result of !<[!][!!!!]
+000000000000000...
+ ^
+```
+
+The `.` and `,` instructions are for input and output.  The `.` outputs the value of the pointer address, and the `,` sets the pointers address to the value recieved as input.
 
 ## Turing Completeness
 
