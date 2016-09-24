@@ -245,6 +245,38 @@ Well, this one isn't too far away from the previous.  The only fundamental diffe
 
 Lastly, we have the "while" loop symbols, which are also fairly difficult.  We now use our while bit and while helper bit.  We set the while bit to 1 if any of the BrainFuck value bits are 1.  If that's one, we exexecute our code block.
 
+Here we break down how we set the while bit to 1 if a value bit is 1:
+
+```brainfuck
+         value bit
+             v
+value bit > 0000 < value helper bit
+              ^
+       while helper bit
+
+// starting from the while bit
+<           // move to the first value
+[           // if the value is 1
+  !<!       // move to the while bit
+  [!<]!<    // set to 1
+  !<!       // jump the while helper bit
+  !<!       // move to the value helper bit
+  [!<]!<    // set to 1
+  <<<       // return to the value bit
+  !<        // zero it out to end the loop
+]
+!<!!<!!<!   // move to the value helper bit
+[           // if it is 1
+  <<<       // move back to the value bit
+  [!<]!<    // set it to 1
+  !<!!<!!<! // move to the value helper bit
+  !<        // set it to 0 to end the loop
+]
+<<<         // move back to the value bit
+```
+
+Doing this for each bit, we can construct our while loop.  Each time we start one more address to the left, so the while bit is one address over relative to our starting point:
+
 ```brainfuck
 // set the while bit to 1 so we can enter the loop
 !<!!<!!<!!<!!<!!<!!<!!<![!<]!<
@@ -252,23 +284,27 @@ Lastly, we have the "while" loop symbols, which are also fairly difficult.  We n
   // set the while bit to 0 to prevent infinite looping
   [!<]
   // if the first BrainFuck value bit is 1 set the while loop to 1
-  <[!<![!<]!<<]
+  <[!<![!<]!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<!<]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<
   // if the second BrainFuck value bit is 1 set the while loop to 1
-  <[!<!!<![!<]!<<<]
+  <[!<!!<![!<]!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<!<]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<
   // and so on
-  <[!<!!<!!<![!<]!<<<<]
-  <[!<!!<!!<!!<![!<]!<<<<<]
-  <[!<!!<!!<!!<!!<![!<]!<<<<<<]
-  <[!<!!<!!<!!<!!<!!<![!<]!<<<<<<<]
-  <[!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<]
-  <[!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<]
+  <[!<!!<!!<![!<]!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<!<]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<
+  <[!<!!<!!<!!<![!<]!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<!<]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<
+  <[!<!!<!!<!!<!!<![!<]!!<!!<!!<!!<![!<]!<<<<<<<<<<<!<]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<
+  <[!<!!<!!<!!<!!<!!<![!<]!!<!!<!!<![!<]!<<<<<<<<<<<!<]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<
+  <[!<!!<!!<!!<!!<!!<!!<![!<]!!<!!<![!<]!<<<<<<<<<<<!<]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<
+  <[!<!!<!!<!!<!!<!!<!!<!!<![!<]!!<![!<]!<<<<<<<<<<<!<]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<
   // return to the while bit
   !<!!<!!<!!<!!<!!<!!<!!<!
   // if 1 {
   !<![!<]<[!<![!<]!<<
+    // return to the big end of the value
+    <<<<<<<<
     /*
       contents of the while loop
     */
+    // return to the while bit
+    !<!!<!!<!!<!!<!!<!!<!!<!
   // }
   !<]!<![<[!<]!<!<!!<]<
 // if the while bit was 1 continue looping
