@@ -108,7 +108,7 @@ I'm guessing you can solve this one...
 
 ### +
 
-Okay a tough one!  First we're going to establish an if/else structure, that utilizes our inc/dec helper bit, which is always exactly ten bits to the right.
+Okay a tough one!  First we're going to establish an if/else structure, that utilizes our inc/dec helper bit, which is always exactly ten bits to the right.  We'll generalize here for a helper bit that is `x` distance to the right.
 
 ```brainfuck
 // Flip the current bit, and return to its address
@@ -120,35 +120,43 @@ Okay a tough one!  First we're going to establish an if/else structure, that uti
 // Force to 1:
 [!<]!<
 
-// Execute exactly once if 1
-// Set address bit's corresponding inc/dec helper bit to 0
-!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<
-// if address bit is 1
-[
-  // set the corresponding inc/dec helper bit to 1
-  !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
+// Execute exactly once if 1:
+!<!      // move to the helper bit (repeat x times)
+[!<]     // zero out the helper bit
+<        // move back to the conditional bit (repeat x times)
+[        // if conditional bit is 1
+  !<!    // move to the helper bit (repeat x times)
+  [!<]!< // set the helper bit to 1
+  <      // move to the conditional bit (repeat x times)
   /*
-    any code with equal left and right shifts
-    that does not affect the address or inc/dec helper bit
+    any code that returns to the conditional bit and
+    that does not affect the conditional or helper bit
   */
-  // zero out address bit to end the loop
-  !<
+  !<     // zero out conditional bit to force end the loop
 ]
-// if the inc/dec helper is 1
-!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![
-  // set address bit to 1 and zero out the inc/dec helper bit
-  <<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<
+!<!      // move to the helper bit (repeat x times)
+[        // if the helper bit is 1
+  <      // move back to the conditional bit (repeat x times)
+  [!<]!< // set the conditional bit to 1
+  !<!    // move back to the helper bit (repeat x times)
+  !<     // zero out conditional bit to force end the loop
 ]
-// return to address bit
-<<<<<<<<<<
+< // return to conditional bit (repeat x times)
+```
+
+Based on that, we can now define the "execute exactly once if 0" pattern, simply by inverting the conditional bit before and after running the "execute exactly once if 1" pattern.
+
+In this example, we show a helper bit 10 bits away and remove some redundant instructions such as `!<!<`.
+
+```brainfuck
 
 Execute exactly once if 0
-!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<
+!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
   /*
-    any code with equal left and right shifts
-    that does not affect the address or inc/dec helper bit
+    any code that returns to the conditional bit and
+    that does not affect the conditional or helper bit
   */
-!<] !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<!<
+]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<!<
 ```
 
 Now for our increment.  We flip the current bit, and if it's zero we need to carry and continue--at least until we run out of available bits (8).  Note how at the end of the "body" of each "if" statement, we always return to the address where the statement started.
@@ -157,62 +165,62 @@ Now for our increment.  We flip the current bit, and if it's zero we need to car
 // increment the little end of our value
 !<!!<!!<!!<!!<!!<!!<!!<
 // if 0 {
-!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<< [!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<
+!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
   // carry
   <!<
   // if 0 {
-  !<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<< [!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<
+  !!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
     // carry
     <!<
     // if 0 {
-    !<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<< [!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<
+    !!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
       // carry
       <!<
       // if 0 {
-      !<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<< [!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<
+      !!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
         // carry
         <!<
         // if 0 {
-        !<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<< [!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<
+        !!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
           // carry
           <!<
           // if 0 {
-          !<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<< [!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<
+          !!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
             // carry
             <!<
             // if 0 {
-            !<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<< [!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<
+            !!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
               // carry
               <!<
               // reached our maximum bits
               // move our address to counter our carry motion
               !<!
             // }
-            !<] !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<!<
+            ]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<!<
             // move our address to counter our carry motion
             !<!
           // }
-          !<] !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<!<
+          ]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<!<
           // move our address to counter our carry motion
           !<!
         // }
-        !<] !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<!<
+        ]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<!<
         // move our address to counter our carry motion
         !<!
       // }
-      !<] !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<!<
+      ]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<!<
       // move our address to counter our carry motion
       !<!
     // }
-    !<] !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<!<
+    ]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<!<
     // move our address to counter our carry motion
     !<!
   // }
-  !<] !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<!<
+  ]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<!<
   // move our address to counter our carry motion
   !<!
 // }
-!<] !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<!<
+]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<!<
 return to the big end of our value
 <<<<<<<
 ```
@@ -223,13 +231,13 @@ Well, this one isn't too far away from the previous.  The only fundamental diffe
 
 ```brainfuck
 !<!!<!!<!!<!!<!!<!!<!!<
-!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<< [!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<
+!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
   <!<
-  !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<< [!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<
+  !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]<<<<<<<<<<[!!<!!<!!<!!<!!<!!<!!<!!<!!<![!<]!<<<<<<<<<<<
     /* and so on */
-  !<] !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<
+  ]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<
   !<!
-!<] !<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<
+]!<!!<!!<!!<!!<!!<!!<!!<!!<!!<![<<<<<<<<<<[!<]!<!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<]<<<<<<<<<<
 <<<<<<<
 ```
 
