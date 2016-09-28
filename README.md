@@ -315,7 +315,7 @@ Doing this for each bit, we can construct our while loop.  Each time we start on
 
 ## FAQ
 
-*It's as easy as `>!!>!!`*
+*It's as easy as `!<!!!!<!!!`*
 
 ##### Why the name?
 
