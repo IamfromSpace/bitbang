@@ -8,12 +8,6 @@ function fullParse(symbols, i, depth, ast) {
       case "<":
         ast.push({ type: 'SYMBOL', symbol: 'LEFT' });
         break;
-      case ".":
-        ast.push({ type: 'SYMBOL', symbol: 'IN' });
-        break;
-      case ",":
-        ast.push({ type: 'SYMBOL', symbol: 'OUT' });
-        break;
       case "[":
         var d = fullParse(symbols, i, depth + 1, []);
         i = d[0];

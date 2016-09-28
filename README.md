@@ -2,9 +2,9 @@
 
 *I like BrainFuck, but why can't it be 8 times harder?*
 
-BitBang is an esoteric programming language inspired by BrainFuck.  It however has two fewer character/instruction and is even harder to write, yay!
+BitBang is an esoteric programming language inspired by BrainFuck.  It however has four fewer character/instruction and is even harder to write, yay!
 
-All symbols operate almost identically, except that `+`, `-`, and `>` are replaced with `!`. Instead of operating on one byte of memory at a time, BitBang operates an a single bit.  `!` inverts the value at pointer's address, and advances the pointer address by one.
+All symbols operate almost identically, except that `+`, `-`, and `>` are replaced with `!`. Instead of operating on one byte of memory at a time, BitBang operates an a single bit.  `!` inverts the value at pointer's address, and advances the pointer address by one.  Also, since not required for Turing Completeness, `.` and `,` are omitted.
 
 ## Syntax
 
@@ -50,8 +50,6 @@ In this example, the second loop never executes, because the value of the pointe
  ^
 ```
 
-The `.` and `,` instructions are for input and output.  The `.` outputs the value of the pointer address, and the `,` sets the pointers address to the value recieved as input.
-
 ## Turing Completeness
 
 *Hey look, a deeper tar pit!*
@@ -69,6 +67,10 @@ bf value     inc/dec helpers
 ```
 
 We consider the pointer on the big end of the value to be at "rest."
+
+### . and ,
+
+By using Memory Mapped I/O, I/O instructions are not specifically required for Turing Completeness, so we don't try to reimplement equivalents in BitBang.  This justified as the langugae P'' is Turing Complete, and does not require `.` or `,` when implemented in BrainFuck.
 
 ### <
 
@@ -88,22 +90,6 @@ This one is a bit more involved, since we don't have a right shift equivalent.  
 
 // advance 18 bits
 !<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!
-```
-
-### .
-
-Now that we know how to advance our pointer, and assuming we input/output from the big end of the byte, we can implement the equivalent of `.`.
-
-```brainfuck
-.!<!.!<!.!<!.!<!.!<!.!<!.!<!.!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!
-```
-
-### ,
-
-I'm guessing you can solve this one...
-
-```brainfuck
-,!<!,!<!,!<!,!<!,!<!,!<!,!<!,!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!!<!
 ```
 
 ### +
